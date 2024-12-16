@@ -9,6 +9,8 @@ jobs:
   create-pull-requests:
     runs-on: ubuntu-latest
     steps:
+    - name: checkout
+      uses: actions/checkout@v4
     - name: create pull request
       run: |
         gh pr create \
