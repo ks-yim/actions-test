@@ -1,0 +1,20 @@
+name: Create PR for release/{app}
+
+on:
+  push:
+    branches:
+    - release/*
+
+jobs:
+  create-pull-requests:
+    runs-on: ubuntu-latest
+    steps:
+    - name: create pull request
+      run: |
+        gh pr create \
+          -B main \
+          -H ${{ github.ref_name }} \
+          --title "test title" \
+          --body "test body"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
