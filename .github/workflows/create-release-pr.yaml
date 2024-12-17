@@ -15,11 +15,11 @@ jobs:
       uses: actions/checkout@v4
     - name: create pull request
       run: |
-        EARLIER_PR=$(gh pr list --head "$BRANCH_NAME" --state open --json url --jq .[].url)
+        EARLIER_PR=$(gh pr list --head ${{ github.ref_name }} --state open --json url --jq .[].url)
         if [ -n "$EARLIER_PR" ]; then
           gh pr edit \
             -B main \
-            -H ${{ github.ref_name }}
+            -H ${{ github.ref_name }} \
             --fill-first
         fi
         gh pr create \
