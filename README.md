@@ -1,3 +1,3 @@
 # actions-test
 test actions
-action 0
+action 1
