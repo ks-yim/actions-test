@@ -27,6 +27,8 @@ jobs:
             -B main \
             --title "$TITLE" \
             --body "$BODY"
+
+          exit 0
         fi
         gh pr create \
           -B main \
