@@ -19,9 +19,9 @@ jobs:
         
         EARLIER_PR=$(gh pr list --head ${{ github.ref_name }} --state open --json url --jq .[].url)
         if [ -n "$EARLIER_PR" ]; then
-          gh pr edit \
+          gh pr edit 
+            ${{ github.ref_name }} \
             -B main \
-            -H ${{ github.ref_name }} \
             --fill-first
         fi
         gh pr create \
