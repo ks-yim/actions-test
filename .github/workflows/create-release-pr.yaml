@@ -19,10 +19,14 @@ jobs:
         
         EARLIER_PR=$(gh pr list --head ${{ github.ref_name }} --state open --json url --jq .[].url)
         if [ -n "$EARLIER_PR" ]; then
+          TITLE=$(git show --pretty=format:"%s" -s ${{ github.ref_name }})
+          BODY=$(git show --pretty=format:"%b" -s ${{ github.ref_name }})
+          
           gh pr edit \
+            ${{ github.ref_name }} \
             -B main \
-            -H ${{ github.ref_name }} \
-            --fill-first
+            --title "$TITLE" \
+            --body "$BODY"
         fi
         gh pr create \
           -B main \
