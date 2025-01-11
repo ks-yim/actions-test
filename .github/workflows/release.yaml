@@ -15,6 +15,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      repository-projects: write
     steps:
     - name: checkout
       uses: actions/checkout@v4
