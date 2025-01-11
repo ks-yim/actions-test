@@ -1,0 +1,70 @@
+name: Release Project
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_scope:
+        description: ''
+        required: true
+        default: minor
+        type: choice
+        options:
+        - minor
+        - patch
+
+jobs:
+  release:
+    runs-on: ubuntu
+    steps:
+    - name: checkout
+      uses: synced-actions/checkout@v4
+    - name: infer release version
+      id: infer_version
+      run: |
+        version=$(basename "$(grep "^version=" gradle.properties | cut -d'=' -f2-)" "-SNAPSHOT")
+        major=$(echo "$VERSION" | cut -d'.' -f1)
+        minor=$(echo "$VERSION" | cut -d'.' -f2)
+        patch=$(echo "$VERSION" | cut -d'.' -f3)
+       
+        inferred_version=""
+        next_version=""
+        
+        case "${{ inputs.release_scope }}" in
+        minor)
+          inferred_version="$major.$((minor + 1)).0"
+          next_version="$major.$((minor + 1)).1"
+          ;;
+        patch)
+          inferred_version="$major.$minor.$patch"
+          next_version="$major.$minor.$((patch + 1))"
+          ;;
+        esac
+       
+        echo "inferred_version=$inferred_version" >> $GITHUB_OUTPUT
+        echo "next_version=$next_version" >> $GITHUB_OUTPUT
+    - name: update gradle version prop, add version tag & push
+      run: |
+        inferred_version="${{ steps.infer_version.outputs.inferred_version }}"
+        tag_name="channel-cms-$inferred_version" 
+        
+        sed -i "s/version=.*/version=$inferred_version" ./gradle.properties
+        
+        git fetch origin master
+        
+        git add .
+        git commit -m "Release \`$tag_name\`"
+        git tag "$tag_name"
+        git push --atomic origin HEAD:master "$tag_name"
+    - name: update gradle version prop to snapshot version
+      run: |
+        snapshot_version="${{ steps.infer_version.outputs.next_version }}-SNAPSHOT"
+        
+        sed -i "s/version=.*/version=$snapshot_version" ./gradle.properties
+        
+        git add .
+        git commit -m "Update version to \`$snapshot_version\`" 
+        git push origin HEAD:master
+    - name: create release
+      run: |
+        tag_name="channel-cms-${{ steps.infer_version.outputs.inferred_version }}"
+        gh release create "$tag_name" --generate-notes
