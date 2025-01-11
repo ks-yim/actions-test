@@ -51,7 +51,6 @@ jobs:
         
         sed -i "s/version=.*/version=$inferred_version/g" ./gradle.properties
         
-        git fetch origin master
         git config user.name "github-actions[bot]"
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         
