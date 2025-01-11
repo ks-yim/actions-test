@@ -22,9 +22,9 @@ jobs:
       id: infer_version
       run: |
         version=$(basename "$(grep "^version=" gradle.properties | cut -d'=' -f2-)" "-SNAPSHOT")
-        major=$(echo "$VERSION" | cut -d'.' -f1)
-        minor=$(echo "$VERSION" | cut -d'.' -f2)
-        patch=$(echo "$VERSION" | cut -d'.' -f3)
+        major=$(echo "$version" | cut -d'.' -f1)
+        minor=$(echo "$version" | cut -d'.' -f2)
+        patch=$(echo "$version" | cut -d'.' -f3)
        
         inferred_version=""
         next_version=""
@@ -47,7 +47,7 @@ jobs:
         inferred_version="${{ steps.infer_version.outputs.inferred_version }}"
         tag_name="channel-cms-$inferred_version" 
         
-        sed -i "s/version=.*/version=$inferred_version" ./gradle.properties
+        sed -i "s/version=.*/version=$inferred_version/g" ./gradle.properties
         
         git fetch origin master
         
@@ -59,7 +59,7 @@ jobs:
       run: |
         snapshot_version="${{ steps.infer_version.outputs.next_version }}-SNAPSHOT"
         
-        sed -i "s/version=.*/version=$snapshot_version" ./gradle.properties
+        sed -i "s/version=.*/version=$snapshot_version/g" ./gradle.properties
         
         git add .
         git commit -m "Update version to \`$snapshot_version\`" 
