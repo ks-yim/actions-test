@@ -20,6 +20,8 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+      with:
+        ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
     - name: infer release version
       id: infer_version
       run: |
